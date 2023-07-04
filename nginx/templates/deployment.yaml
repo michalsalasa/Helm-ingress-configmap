@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydeployment  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mydeployment
+  template:
+    metadata:
+      labels:
+        app: mydeployment
+    spec:
+      containers:
+      - name: mydeployment
+        image: acrmsalasa.azurecr.io/helmapp:0.02
+        ports:
+        - containerPort: 6969
+        volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+        env:
+        - name: KUBERNETES_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: HTTP_PROXY
+          value: "http://proxy.example.com"
+        - name: JSON_LOGS
+          value: "true"
+        - name: ENV
+          value: "production"
+        - name: APP_HOST
+          value: "mshelm.occc-azure.pl"
+        - name: APP_PORT
+          value: "6969"

@@ -1,0 +1,24 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: example-issuer
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: michal.salasa@onwelo.com
+    privateKeySecretRef:
+      name: letsencrypt
+    solvers:
+    - dns01:
+        azureDNS:
+          clientID: 1de881c2-2dd1-4f2d-823c-862e264ef4e0
+          clientSecretSecretRef:
+          # The following is the secret we created in Kubernetes. Issuer will use this to present challenge to Azure DNS.
+            name: azuredns-config
+            key: client-secret
+          subscriptionID: 5fc6b3ed-02db-4abe-8ec1-e5d68f4677bd
+          tenantID: 0a92db7a-3ddf-4ba0-a00b-79806b1cadac
+          resourceGroupName: rg-infrastructure
+          hostedZoneName: occc-azure.pl
+          # Azure Cloud Environment, default to AzurePublicCloud
+          environment: AzurePublicCloud

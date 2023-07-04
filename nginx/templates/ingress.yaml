@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-world-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: example-issuer
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: GET, PUT, POST, DELETE, OPTIONS
+    nginx.ingress.kubernetes.io/proxy-body-size: "5m"
+    nginx.ingress.kubernetes.io/server-tokens: "off"
+    nginx.ingress.kubernetes.io/limit-connections: "1000"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - mshelm.occc-azure.pl
+    secretName: tls-secret
+  rules:
+  - host: mshelm.occc-azure.pl
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mojservis
+            port:
+              number: 6969
